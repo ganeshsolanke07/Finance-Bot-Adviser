@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}AI Financial Advisor - Personal Finance Advisor Bot{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-between mb-3">
+    <div class="col-md-7">
+        <h2 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+            <span class="bot-badge-icon bg-warning text-dark rounded-circle p-2 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-robot fs-4"></i>
+            </span>
+            <span>Personal AI Financial Advisor</span>
+        </h2>
+        <p class="text-muted small mb-0">Powered by Gemini AI &middot; Tailored directly to your actual income and expenses</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex justify-content-md-end align-items-center gap-2">
+        <form method="GET" action="{{ url_for('advisor') }}" class="d-inline-flex align-items-center gap-2">
+            <label class="small fw-semibold text-muted text-nowrap">Month Context:</label>
+            <input type="month" id="selectedMonth" name="month" class="form-control form-control-sm" value="{{ selected_month }}" onchange="this.form.submit()">
+        </form>
+    </div>
+</div>
+
+<!-- API Key Status Notification if Not Configured -->
+{% if not has_api_key %}
+<div class="alert alert-info border-0 shadow-sm rounded-4 d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+        <div class="small">
+            <strong>Running with Smart Built-in Financial Advisor!</strong>
+            To enable live Google Gemini AI responses, obtain a free API key from <a href="https://aistudio.google.com/" target="_blank" class="fw-bold text-primary text-decoration-underline">Google AI Studio</a> and set <code>GEMINI_API_KEY=your_key</code> in your <code>.env</code> file.
+        </div>
+    </div>
+    <span class="badge bg-light text-primary border rounded-pill">Offline Ready</span>
+</div>
+{% endif %}
+
+<!-- Financial Snapshot Banner for Context -->
+<div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+    <div class="row align-items-center text-center text-sm-start g-3">
+        <div class="col-sm-3 border-end-sm">
+            <span class="text-muted small text-uppercase">Monthly Income</span>
+            <div class="fs-5 fw-bold text-success">{{ summary.total_income|currency }}</div>
+        </div>
+        <div class="col-sm-3 border-end-sm">
+            <span class="text-muted small text-uppercase">Monthly Expenses</span>
+            <div class="fs-5 fw-bold text-danger">{{ summary.total_expenses|currency }}</div>
+        </div>
+        <div class="col-sm-3 border-end-sm">
+            <span class="text-muted small text-uppercase">Net Savings</span>
+            <div class="fs-5 fw-bold {{ 'text-primary' if summary.savings >= 0 else 'text-danger' }}">
+                {{ summary.savings|currency }} ({{ summary.savings_pct }}%)
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <button id="generateAnalysisBtn" class="btn btn-sm btn-outline-primary rounded-pill w-100 py-2 fw-semibold">
+                <i class="bi bi-stars me-1 text-warning"></i> Auto Full Analysis
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Main AI Chatbot Card -->
+<div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+    <!-- Chat Header -->
+    <div class="p-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+            <div class="avatar-robot bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-robot"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold text-dark mb-0">Penny the Financial Advisor</h6>
+                <span class="badge bg-success-subtle text-success small rounded-pill">
+                    <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> Context Loaded ({{ selected_month }})
+                </span>
+            </div>
+        </div>
+        <button id="clearChatBtn" class="btn btn-sm btn-link text-muted text-decoration-none">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Chat
+        </button>
+    </div>
+
+    <!-- Chat Messages Scroll Area -->
+    <div id="chatMessages" class="chat-messages p-4" style="height: 440px; overflow-y: auto;">
+        <!-- Welcome Message from Bot -->
+        <div class="chat-message bot mb-3">
+            <div class="d-flex gap-2">
+                <div class="avatar-small bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div class="message-bubble bg-light text-dark p-3 rounded-4 shadow-sm border">
+                    <p class="mb-2 fw-semibold">Hello {{ current_user.username }}! 👋</p>
+                    <p class="mb-2">
+                        I am your <strong>Personal Finance Advisor</strong>. I have analyzed your transactions for <strong>{{ summary.month_str }}</strong>:
+                    </p>
+                    <ul class="mb-2 ps-3 small">
+                        <li><strong>Income:</strong> {{ summary.total_income|currency }}</li>
+                        <li><strong>Expenses:</strong> {{ summary.total_expenses|currency }}</li>
+                        <li><strong>Current Savings:</strong> {{ summary.savings|currency }} ({{ summary.savings_pct }}%)</li>
+                    </ul>
+                    <p class="mb-0 small text-secondary">
+                        How can I help you today? You can ask me how to save more, optimize your budget, or click any prompt below.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Prompt Suggestions Chips -->
+    <div class="px-4 py-2 bg-light-subtle border-top d-flex gap-2 flex-wrap">
+        <span class="small text-muted fw-semibold align-self-center me-1"><i class="bi bi-lightbulb text-warning me-1"></i>Quick Prompts:</span>
+        <button class="btn btn-xs btn-outline-secondary rounded-pill prompt-chip" data-prompt="Analyze my spending habits for this month.">
+            Analyze spending habits
+        </button>
+        <button class="btn btn-xs btn-outline-secondary rounded-pill prompt-prompt prompt-chip" data-prompt="Where am I spending the most money and how can I cut back?">
+            Where am I overspending?
+        </button>
+        <button class="btn btn-xs btn-outline-secondary rounded-pill prompt-chip" data-prompt="How does my budget compare to the 50/30/20 rule?">
+            50/30/20 Rule check
+        </button>
+        <button class="btn btn-xs btn-outline-secondary rounded-pill prompt-chip" data-prompt="Give me 3 realistic ways to save $200 extra this month.">
+            Save $200 extra
+        </button>
+    </div>
+
+    <!-- Input Form -->
+    <div class="p-3 bg-white border-top">
+        <form id="advisorChatForm" class="d-flex gap-2">
+            <input type="text" id="userInput" class="form-control rounded-pill px-4" placeholder="Ask financial question (e.g. 'Can I afford dining out this weekend?')..." required autocomplete="off">
+            <button type="submit" id="sendBtn" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm d-flex align-items-center gap-2">
+                <span>Send</span>
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initAdvisorChat("{{ selected_month }}");
+    });
+</script>
+{% endblock %}

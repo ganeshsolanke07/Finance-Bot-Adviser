@@ -1,0 +1,244 @@
+/* ========================================================
+   Personal Finance Advisor Bot - Modern Stylesheet
+   ======================================================== */
+
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-light);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- Brand & Navbar --- */
+.bg-primary-gradient {
+    background: var(--primary-gradient) !important;
+}
+
+.brand-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.brand-text {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+}
+
+.text-accent {
+    color: #fbbf24;
+}
+
+.nav-pills-custom .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    padding: 0.5rem 0.85rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-pills-custom .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-pills-custom .nav-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.22);
+    font-weight: 600;
+}
+
+.user-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    padding: 0.35rem 0.85rem;
+    color: #ffffff !important;
+}
+
+.user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fbbf24;
+    color: #1e3a8a;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+/* --- Cards & Dashboard --- */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+}
+
+.stat-icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.feature-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Category Badges Styling --- */
+.category-badge-food { background-color: #ffedd5; color: #c2410c; }
+.category-badge-rent { background-color: #e0e7ff; color: #4338ca; }
+.category-badge-transport { background-color: #dbeafe; color: #1d4ed8; }
+.category-badge-education { background-color: #f3e8ff; color: #7e22ce; }
+.category-badge-healthcare { background-color: #d1fae5; color: #047857; }
+.category-badge-shopping { background-color: #fce7f3; color: #be185d; }
+.category-badge-entertainment { background-color: #ede9fe; color: #6d28d9; }
+.category-badge-bills { background-color: #ccfbf1; color: #0f766e; }
+.category-badge-other { background-color: #f1f5f9; color: #475569; }
+
+/* --- AI Chatbot Styles --- */
+.avatar-robot {
+    width: 38px;
+    height: 38px;
+    font-size: 1.2rem;
+}
+
+.avatar-small {
+    width: 34px;
+    height: 34px;
+    font-size: 1.05rem;
+}
+
+.chat-message.user {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.chat-message.user .message-bubble {
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+    max-width: 80%;
+}
+
+.chat-message.bot .message-bubble {
+    border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+    max-width: 85%;
+    line-height: 1.6;
+}
+
+.prompt-chip {
+    font-size: 0.8rem;
+    transition: background 0.15s ease;
+}
+
+.prompt-chip:hover {
+    background-color: #e2e8f0;
+}
+
+/* Typing pulse animation */
+.typing-indicator span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #94a3b8;
+    border-radius: 50%;
+    margin-right: 3px;
+    animation: typingPulse 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingPulse {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+/* --- Hero & Auth --- */
+.auth-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.text-gradient-primary {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- Print Styling for Monthly Report --- */
+@media print {
+    body {
+        background: #ffffff !important;
+        font-size: 11pt;
+    }
+
+    .no-print,
+    nav,
+    footer,
+    .btn,
+    form,
+    #monthPicker {
+        display: none !important;
+    }
+
+    .report-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .table {
+        border-color: #000000 !important;
+    }
+}

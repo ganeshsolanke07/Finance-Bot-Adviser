@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Income Management - Personal Finance Advisor Bot{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-between mb-4">
+    <div class="col-md-6">
+        <h2 class="fw-bold text-dark mb-1">
+            <i class="bi bi-cash-coin text-success me-2"></i>Monthly Income
+        </h2>
+        <p class="text-muted small mb-0">Record and monitor all your sources of income</p>
+    </div>
+    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <form method="GET" action="{{ url_for('income') }}" class="d-inline-flex align-items-center gap-2">
+            <label class="small fw-semibold text-muted text-nowrap">Filter Month:</label>
+            <input type="month" name="month" class="form-control form-control-sm" value="{{ selected_month }}" onchange="this.form.submit()">
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Add Income Form Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="stat-icon-box bg-success-subtle text-success rounded-3">
+                    <i class="bi bi-plus-lg"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-0">Add New Income</h5>
+            </div>
+
+            <form action="{{ url_for('add_income') }}" method="POST">
+                <div class="mb-3">
+                    <label for="source" class="form-label fw-semibold">Income Source</label>
+                    <select name="source" id="source" class="form-select" required>
+                        {% for src in income_sources %}
+                        <option value="{{ src }}">{{ src }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="form-label fw-semibold">Amount ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">$</span>
+                        <input type="number" step="0.01" min="0.01" name="amount" id="amount" class="form-control" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="date" class="form-label fw-semibold">Date Received</label>
+                    <input type="date" name="date" id="date" class="form-control" value="{{ today_str }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="notes" class="form-label fw-semibold">Notes / Memo (Optional)</label>
+                    <textarea name="notes" id="notes" class="form-control" rows="2" placeholder="e.g. Monthly salary from Tech Corp"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2 rounded-3 fw-semibold shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> Save Income
+                </button>
+            </form>
+        </div>
+
+        <!-- Monthly Income Total Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-success-subtle text-success-emphasis mt-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="small fw-semibold text-uppercase">Total for {{ selected_month }}</span>
+                    <h3 class="fw-bold mb-0 text-success">{{ summary.total_income|currency }}</h3>
+                </div>
+                <i class="bi bi-wallet-fill fs-1 text-success opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incomes List Card -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark mb-0">Income Records ({{ incomes|length }})</h5>
+                <span class="badge bg-light text-muted border">{{ selected_month }}</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Notes</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-center" style="width: 70px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in incomes %}
+                        <tr>
+                            <td class="small text-muted">{{ item.date.strftime('%b %d, %Y') }}</td>
+                            <td>
+                                <span class="badge bg-success-subtle text-success rounded-pill fw-semibold">
+                                    {{ item.source }}
+                                </span>
+                            </td>
+                            <td class="small text-muted">{{ item.notes or '—' }}</td>
+                            <td class="text-end fw-bold text-success">+{{ item.amount|currency }}</td>
+                            <td class="text-center">
+                                <form action="{{ url_for('delete_income', id=item.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this income entry?');" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle p-1" title="Delete">
+                                        <i class="bi bi-trash fs-6"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                No income entries logged for {{ selected_month }}.<br>
+                                Use the form to record your first income!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

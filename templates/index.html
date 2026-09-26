@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Personal Finance Advisor Bot - Smart Financial Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="row align-items-center g-5 py-4">
+        <div class="col-lg-6">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+                <i class="bi bi-stars me-1"></i> AI-Powered Financial Intelligence
+            </span>
+            <h1 class="display-4 fw-bold text-dark lh-tight mb-3">
+                Take Control of Your Money with <span class="text-gradient-primary">Gemini AI</span>
+            </h1>
+            <p class="lead text-secondary mb-4">
+                Track your income, manage category budgets, visualize your spending patterns, and get personalized financial recommendations powered by Google's Gemini AI.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                    <i class="bi bi-rocket-takeoff me-2"></i> Get Started Free
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                </a>
+            </div>
+            
+            <div class="row mt-5 pt-3 border-top g-3">
+                <div class="col-4">
+                    <h4 class="fw-bold text-dark mb-0">100%</h4>
+                    <p class="text-muted small mb-0">Private & Secure</p>
+                </div>
+                <div class="col-4">
+                    <h4 class="fw-bold text-dark mb-0">9+</h4>
+                    <p class="text-muted small mb-0">Categories</p>
+                </div>
+                <div class="col-4">
+                    <h4 class="fw-bold text-dark mb-0">24/7</h4>
+                    <p class="text-muted small mb-0">AI Advisor</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="hero-preview-card shadow-lg rounded-4 p-4 bg-white border">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="preview-dot bg-danger"></div>
+                        <div class="preview-dot bg-warning"></div>
+                        <div class="preview-dot bg-success"></div>
+                        <span class="small text-muted ms-2 fw-medium">Financial Dashboard Preview</span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">
+                        <i class="bi bi-shield-check me-1"></i> Live Calculations
+                    </span>
+                </div>
+                
+                <!-- Quick Mini Stats Cards -->
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border-start border-4 border-success">
+                            <span class="text-muted small d-block">Monthly Income</span>
+                            <span class="fs-5 fw-bold text-dark">$4,500.00</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
+                            <span class="text-muted small d-block">Net Savings (35%)</span>
+                            <span class="fs-5 fw-bold text-primary">$1,575.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini AI Bot Bubble -->
+                <div class="ai-speech-bubble p-3 rounded-3 mb-2 bg-primary-subtle text-dark">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-robot text-primary"></i>
+                        <strong class="small text-primary">Gemini Advisor Penny:</strong>
+                    </div>
+                    <p class="small mb-0 text-secondary">
+                        "Great work! You are saving 35% of your income this month. Cutting $50 on dining out can accelerate your Emergency Fund goal by 2 months."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Cards Section -->
+    <div class="py-5">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <h2 class="fw-bold text-dark">Everything You Need to Master Your Finances</h2>
+            <p class="text-muted">A complete suite of financial tools designed to be beginner-friendly, transparent, and intelligent.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 feature-card">
+                    <div class="card-body">
+                        <div class="feature-icon bg-success-subtle text-success rounded-3 mb-3">
+                            <i class="bi bi-wallet2 fs-3"></i>
+                        </div>
+                        <h5 class="fw-bold card-title">Income & Expense Tracking</h5>
+                        <p class="card-text text-muted">
+                            Log income and expenses seamlessly with 9 standard categories: Food, Rent, Transport, Healthcare, Education, and more.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 feature-card">
+                    <div class="card-body">
+                        <div class="feature-icon bg-warning-subtle text-warning rounded-3 mb-3">
+                            <i class="bi bi-pie-chart-fill fs-3"></i>
+                        </div>
+                        <h5 class="fw-bold card-title">Monthly Budget & Alerts</h5>
+                        <p class="card-text text-muted">
+                            Set overall and category spending budgets. Receive instant visual alerts whenever you approach or exceed limits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 feature-card">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary-subtle text-primary rounded-3 mb-3">
+                            <i class="bi bi-robot fs-3"></i>
+                        </div>
+                        <h5 class="fw-bold card-title">Gemini AI Financial Advisor</h5>
+                        <p class="card-text text-muted">
+                            Chat directly with Gemini AI. Ask questions, get spending analysis, and receive tailored tips based on your actual budget.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

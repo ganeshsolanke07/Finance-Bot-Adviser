@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly Financial Report ({{ selected_month }}) - Personal Finance Advisor Bot{% endblock %}
+
+{% block content %}
+<div class="report-wrapper">
+    <!-- Top Action Bar (hidden when printing) -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i>Monthly Financial Report
+            </h2>
+            <p class="text-muted small mb-0">Detailed statement and AI audit for <strong>{{ selected_month }}</strong></p>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <form method="GET" action="{{ url_for('report') }}" class="d-inline-flex align-items-center gap-2">
+                <label class="small fw-semibold text-muted text-nowrap">Report Month:</label>
+                <input type="month" name="month" class="form-control form-control-sm" value="{{ selected_month }}" onchange="this.form.submit()">
+            </form>
+
+            <button type="button" onclick="window.print()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-printer me-1"></i> Print / Save as PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Report Container -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white report-sheet mb-4">
+        <!-- Report Header -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Personal Financial Statement</h3>
+                <span class="text-muted">Prepared for: <strong>{{ current_user.username }}</strong> ({{ current_user.email }})</span>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">Period: {{ selected_month }}</span>
+                <div class="small text-muted mt-1">Generated: {{ current_month_str }}</div>
+            </div>
+        </div>
+
+        <!-- Executive Metrics Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-success">
+                    <span class="text-muted small text-uppercase fw-semibold">Total Income</span>
+                    <h4 class="fw-bold text-success mb-0 mt-1">{{ summary.total_income|currency }}</h4>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-danger">
+                    <span class="text-muted small text-uppercase fw-semibold">Total Expenses</span>
+                    <h4 class="fw-bold text-danger mb-0 mt-1">{{ summary.total_expenses|currency }}</h4>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
+                    <span class="text-muted small text-uppercase fw-semibold">Net Savings</span>
+                    <h4 class="fw-bold {{ 'text-primary' if summary.savings >= 0 else 'text-danger' }} mb-0 mt-1">
+                        {{ summary.savings|currency }}
+                    </h4>
+                    <span class="small text-muted">{{ summary.savings_pct }}% of Income</span>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-warning">
+                    <span class="text-muted small text-uppercase fw-semibold">Budget Used</span>
+                    <h4 class="fw-bold text-dark mb-0 mt-1">
+                        {% if summary.budget_amount > 0 %}
+                            {{ summary.budget_used_pct }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h4>
+                    <span class="small text-muted">
+                        {% if summary.budget_amount > 0 %}
+                            {{ summary.budget_remaining|currency }} remaining
+                        {% else %}
+                            No budget set
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Advisor Review & Recommendations Box -->
+        <div class="card border-0 bg-light-subtle rounded-4 p-4 mb-4 border">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-robot text-warning fs-4"></i>
+                <h5 class="fw-bold text-dark mb-0">AI Financial Audit & Executive Summary</h5>
+            </div>
+            <div class="markdown-body small text-secondary mt-2">
+                {{ ai_summary|replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+
+        <!-- Category Breakdown Table -->
+        <h5 class="fw-bold text-dark mb-3">Category-Wise Spending Analysis</h5>
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light small">
+                    <tr>
+                        <th>Category</th>
+                        <th class="text-end">Actual Spent</th>
+                        <th class="text-end">% of Total Expenses</th>
+                        <th class="text-end">Category Budget</th>
+                        <th class="text-center">Budget Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in category_breakdown %}
+                    {% if item.amount > 0 or item.budget > 0 %}
+                    <tr>
+                        <td class="fw-semibold text-dark">{{ item.category }}</td>
+                        <td class="text-end fw-bold text-danger">{{ item.amount|currency }}</td>
+                        <td class="text-end">
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill">
+                                {{ item.percentage }}%
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            {{ item.budget|currency if item.budget > 0 else '—' }}
+                        </td>
+                        <td class="text-center">
+                            {% if item.budget > 0 %}
+                                {% if item.over_budget %}
+                                    <span class="badge bg-danger rounded-pill">Over by {{ (item.amount - item.budget)|currency }}</span>
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill">Under Budget</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-light text-muted border rounded-pill">No limit set</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-3 text-muted">No expenses recorded for this month.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Transactions Lists -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-dark mb-2">Itemized Incomes ({{ incomes|length }})</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped small">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Source</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inc in incomes %}
+                            <tr>
+                                <td>{{ inc.date.strftime('%b %d') }}</td>
+                                <td>{{ inc.source }}</td>
+                                <td class="text-end fw-bold text-success">+{{ inc.amount|currency }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted">No income records</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="fw-bold text-dark mb-2">Itemized Expenses ({{ expenses|length }})</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped small">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exp in expenses %}
+                            <tr>
+                                <td>{{ exp.date.strftime('%b %d') }}</td>
+                                <td>{{ exp.title }}</td>
+                                <td>{{ exp.category }}</td>
+                                <td class="text-end fw-bold text-danger">-{{ exp.amount|currency }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" class="text-center text-muted">No expense records</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
